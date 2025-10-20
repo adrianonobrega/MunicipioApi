@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "wAe1Of1UfQ0=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\MunicipioApi.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Não é possível carregar o índice de serviço para a origem https://epharmapbm.pkgs.visualstudio.com/_packaging/ePharmaNuget/nuget/v3/index.json.\r\n  O código de status de resposta não indica êxito: 401 (Unauthorized).",
+      "projectPath": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\MunicipioApi.csproj",
+      "filePath": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\MunicipioApi.csproj",
+      "libraryId": "Swashbuckle.AspNetCore",
+      "targetGraphs": []
+    }
+  ]
+}
