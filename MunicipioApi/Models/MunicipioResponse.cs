@@ -2,8 +2,7 @@
 {
     public class MunicipioResponse
     {
-        public string Name { get; set; }
-
-        public string IbgeCode { get; set; }
+        public string Name { get; set; } = default!;
+        public string IbgeCode { get; set; } = default!;
     }
 }

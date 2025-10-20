@@ -8,12 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Services\Cache\" />
+    <InternalsVisibleTo Include="Tests" />
   </ItemGroup>
 
 </Project>

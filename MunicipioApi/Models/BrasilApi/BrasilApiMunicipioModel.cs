@@ -2,8 +2,7 @@
 {
     public class BrasilApiMunicipioModel
     {
-        public string nome { get; set; }
         public int codigo_ibge { get; set; }
-
+        public string nome { get; set; } = default!;
     }
 }
