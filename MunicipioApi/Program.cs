@@ -4,6 +4,9 @@ using MunicipioApi.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMemoryCache();
+
+builder.Services.AddSingleton<ICacheService, CacheService>();
 
 
 builder.Services.AddControllers();

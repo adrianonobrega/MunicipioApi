@@ -10,30 +10,43 @@ namespace MunicipioApi.Api.Extensions
             var activeProvider = configuration["IbgeApiConfig:ActiveProvider"];
 
             var brasilApiUrl = configuration["IbgeApiConfig:BrasilApiUrl"]
-                               ?? throw new InvalidOperationException("BrasilApiUrl não configurada em IbgeApiConfig.");
+                                 ?? throw new InvalidOperationException("BrasilApiUrl não configurada em IbgeApiConfig.");
             var ibgeApiUrl = configuration["IbgeApiConfig:IbgeApiUrl"]
-                             ?? throw new InvalidOperationException("IbgeApiUrl não configurada em IbgeApiConfig.");
+                                 ?? throw new InvalidOperationException("IbgeApiUrl não configurada em IbgeApiConfig.");
 
-            services.AddHttpClient();
+            services.AddHttpClient<BrasilApiProvider>(client =>
+            {
+                client.BaseAddress = new Uri(brasilApiUrl);
+            });
 
-            if (activeProvider?.ToUpper() == "BRASIL_API")
+            services.AddHttpClient<IbgeApiProvider>(client =>
             {
-                services.AddHttpClient<IIbgeProvider, BrasilApiProvider>(client =>
+                client.BaseAddress = new Uri(ibgeApiUrl);
+            });
+
+            services.AddScoped<IIbgeProvider>(serviceProvider =>
+            {
+                var cacheService = serviceProvider.GetRequiredService<ICacheService>();
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+                IIbgeProvider concreteProvider;
+
+                if (activeProvider?.ToUpper() == "BRASIL_API")
                 {
-                    client.BaseAddress = new Uri(brasilApiUrl);
-                });
-            }
-            else if (activeProvider?.ToUpper() == "IBGE_API")
-            {
-                services.AddHttpClient<IIbgeProvider, IbgeApiProvider>(client =>
+                    concreteProvider = serviceProvider.GetRequiredService<BrasilApiProvider>();
+                }
+                else if (activeProvider?.ToUpper() == "IBGE_API")
                 {
-                    client.BaseAddress = new Uri(ibgeApiUrl);
-                });
-            }
-            else
-            {
-                throw new InvalidOperationException($"Provedor IBGE '{activeProvider}' não é válido. Use BRASIL_API ou IBGE_API.");
-            }
+                    concreteProvider = serviceProvider.GetRequiredService<IbgeApiProvider>();
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Provedor IBGE '{activeProvider}' não é válido. Use BRASIL_API ou IBGE_API.");
+                }
+
+                var logger = loggerFactory.CreateLogger<CachedIbgeProvider>();
+                return new CachedIbgeProvider(concreteProvider, cacheService, logger);
+            });
 
             return services;
         }
