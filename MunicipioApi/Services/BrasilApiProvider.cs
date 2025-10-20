@@ -1,9 +1,8 @@
 ﻿using MunicipioApi.Api.Services.Interfaces;
 using MunicipioApi.Api.Models;
 using MunicipioApi.Api.Models.BrasilApi;
-using MunicipioApi.Api.Exceptions;       
-using System.Net.Http.Json;             
-
+using MunicipioApi.Api.Exceptions;
+using System.Net;
 namespace MunicipioApi.Api.Services
 {
     public class BrasilApiProvider : IIbgeProvider
@@ -18,6 +17,11 @@ namespace MunicipioApi.Api.Services
         public async Task<IEnumerable<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla)
         {
             var response = await _httpClient.GetAsync($"/api/ibge/municipios/v1/{ufSigla}");
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return Enumerable.Empty<MunicipioResponse>();
+            }
 
             if (!response.IsSuccessStatusCode)
             {
