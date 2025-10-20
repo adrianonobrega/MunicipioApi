@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D60FDB04-EE85-4B45-8A95-55237331C8B7}|MunicipioApi\\MunicipioApi.csproj|c:\\users\\adria\\documents\\teste\\municipioapi\\municipioapi\\services\\interfaces\\iibgeprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D60FDB04-EE85-4B45-8A95-55237331C8B7}|MunicipioApi\\MunicipioApi.csproj|solutionrelative:municipioapi\\services\\interfaces\\iibgeprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D60FDB04-EE85-4B45-8A95-55237331C8B7}|MunicipioApi\\MunicipioApi.csproj|c:\\users\\adria\\documents\\teste\\municipioapi\\municipioapi\\models\\municipioresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D60FDB04-EE85-4B45-8A95-55237331C8B7}|MunicipioApi\\MunicipioApi.csproj|solutionrelative:municipioapi\\models\\municipioresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IIbgeProvider.cs",
+              "DocumentMoniker": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\Services\\Interfaces\\IIbgeProvider.cs",
+              "RelativeDocumentMoniker": "MunicipioApi\\Services\\Interfaces\\IIbgeProvider.cs",
+              "ToolTip": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\Services\\Interfaces\\IIbgeProvider.cs",
+              "RelativeToolTip": "MunicipioApi\\Services\\Interfaces\\IIbgeProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T19:38:02.932Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MunicipioResponse.cs",
+              "DocumentMoniker": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\Models\\MunicipioResponse.cs",
+              "RelativeDocumentMoniker": "MunicipioApi\\Models\\MunicipioResponse.cs",
+              "ToolTip": "C:\\Users\\adria\\Documents\\Teste\\MunicipioApi\\MunicipioApi\\Models\\MunicipioResponse.cs",
+              "RelativeToolTip": "MunicipioApi\\Models\\MunicipioResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T19:36:55.223Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
