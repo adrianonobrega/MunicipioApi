@@ -1,4 +1,4 @@
-<h1>🌎 MUNICÍPIO API</h1>
+<h1>🌎 MUNICÍPIO API: DESAFIO TÉCNICO DEV FULLSTACK .NET</h1>
 
 API RESTful desenvolvida em ASP.NET Core 8 para pesquisar e listar municípios brasileiros por Unidade Federativa (UF), utilizando provedores de dados externos e implementando padrões avançados de arquitetura e otimização.
 
@@ -18,15 +18,49 @@ O cache armazena a lista completa de municípios por UF, garantindo que o hit de
 
 <h2>2. Provider Dinâmico</h2>
 
-O provedor de dados (BrasilApiProvider ou IbgeApiProvider) é selecionado dinamicamente durante a inicialização (Program.cs) com base na variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong>.
+O provedor de dados (BrasilApiProvider ou IbgeApiProvider) é selecionado dinamicamente durante a inicialização (Program.cs) com base na variável de ambiente IBGE_PROVIDER_TYPE.
 
 O Controller e o Cache dependem apenas da interface IIbgeProvider, isolando a aplicação da fonte de dados externa.
 
 <h2>3. Tratamento Global de Exceções</h2>
 
+Para garantir a qualidade e o princípio DRY (Don't Repeat Yourself):
+
+O Controller é um Thin Controller (sem blocos try-catch).
+
 Falhas de API externa (HttpResponseMessage não-sucesso) lançam uma exceção customizada: ProviderIndisponivelException.
 
 Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceção e mapeia-a automaticamente para o código HTTP 503 Service Unavailable, garantindo uma resposta consistente e semântica.
+
+<h2>4. Paginação do Lado do Servidor</h2>
+
+A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o Service Layer (Providers), garantindo que a lista retornada ao Controller já esteja formatada corretamente.
+
+<h1>📈 ESTRATÉGIA DE CRESCIMENTO E ESCALABILIDADE</h1>
+
+O projeto foi estruturado para suportar a adição de novos endpoints e funcionalidades de forma modular, minimizando o risco de regressão.
+
+<h2>Adição de Novos Endpoints</h2>
+
+Qualquer nova funcionalidade deve seguir a Estrutura de Camadas existente para manter a coesão:
+
+Interface de Serviço (Services/Interfaces): Crie uma nova interface (ex: ICidadeService) que define o contrato da nova funcionalidade.
+
+Implementação de Serviço (Services/Implementation): Crie a classe que implementa a lógica de negócio (ex: CidadeService).
+
+Novo Controller (Controllers): Crie um novo Controller (ex: CidadesController) que injeta a nova interface de serviço.
+
+Injeção de Dependência (Program.cs): Registre a nova interface e sua implementação no pipeline de DI (ex: builder.Services.AddScoped<ICidadeService, CidadeService>()).
+
+<h2>Expansão de Provedores Externos</h2>
+
+Para adicionar um novo provedor (ex: dados populacionais, clima, etc.), utilize o Padrão de Provedor atual:
+
+Crie uma nova interface (ex: IClimaProvider).
+
+Crie as classes de implementação (ex: OpenWeatherProvider).
+
+A lógica de injeção dinâmica deve ser replicada para o novo Provider, permitindo alternar a fonte de dados via variável de ambiente, se necessário.
 
 <h1>📦 COMO EXECUTAR O PROJETO</h1>
 
