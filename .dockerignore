@@ -1,0 +1,20 @@
+# Ignorar binários e objetos
+**/bin/
+**/obj/
+**/out/
+
+# Ignorar o cache do Visual Studio
+.vs/
+.vscode/
+
+# Ignorar arquivos de pacotes
+packages/
+*.nupkg
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignorar git
+.git
+.gitignore
