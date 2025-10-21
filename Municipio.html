@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municípios do IBGE - Paginação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        
+        <header class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Consulta de Municípios</h1>
+        </header>
+
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Busca</h2>
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                
+                <div class="flex-grow">
+                    <label for="ufInput" class="block text-sm font-medium text-gray-700 mb-1">Sigla da UF (Ex: RJ)</label>
+                    <input type="text" id="ufInput" value="RJ" maxlength="2"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 uppercase shadow-sm"
+                           placeholder="Ex: SP">
+                </div>
+
+                <div class="w-full md:w-40">
+                    <label for="pageSizeSelect" class="block text-sm font-medium text-gray-700 mb-1">Tamanho da Página</label>
+                    <select id="pageSizeSelect"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="10">10 Municípios</option>
+                        <option value="25">25 Municípios</option>
+                        <option value="50">50 Municípios</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button id="searchButton"
+                            class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out shadow-md disabled:opacity-50">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="messageBox" class="p-4 rounded-xl mb-4 hidden" role="alert"></div>
+
+        <div id="resultsSection" class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4" id="resultsTitle">Resultados</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nome do Município
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+                                Código IBGE
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="municipiosTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="2" class="px-6 py-4 text-center text-gray-500 italic">
+                                Use a busca acima para listar os municípios de uma UF.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="paginationControls" class="flex justify-between items-center mt-6 border-t pt-4 hidden">
+                <span id="pageStatus" class="text-sm text-gray-600"></span>
+                <div class="flex space-x-3">
+                    <button id="prevButton" disabled
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition duration-150 disabled:opacity-30 disabled:cursor-not-allowed">
+                        Anterior
+                    </button>
+                    <button id="nextButton" disabled
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition duration-150 disabled:opacity-30 disabled:cursor-not-allowed">
+                        Próxima
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://municipioapi.onrender.com/api/municipios/';
+        // const API_BASE_URL = 'http://localhost:5000/api/municipios/';
+        
+        let state = {
+            currentPage: 1,
+            pageSize: 10,
+            currentUf: '',
+            totalPages: 0,
+            totalRecords: 0
+        };
+
+        const ufInput = document.getElementById('ufInput');
+        const pageSizeSelect = document.getElementById('pageSizeSelect');
+        const searchButton = document.getElementById('searchButton');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const municipiosTableBody = document.getElementById('municipiosTableBody');
+        const pageStatus = document.getElementById('pageStatus');
+        const paginationControls = document.getElementById('paginationControls');
+        const messageBox = document.getElementById('messageBox');
+
+        function showMessage(message, type = 'info') {
+            let bgColor = 'bg-blue-100 text-blue-700';
+            if (type === 'error') bgColor = 'bg-red-100 text-red-700';
+            if (type === 'success') bgColor = 'bg-green-100 text-green-700';
+
+            messageBox.className = `p-4 rounded-xl mb-4 ${bgColor}`;
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden');
+        }
+
+        function clearMessage() {
+            messageBox.classList.add('hidden');
+            messageBox.textContent = '';
+        }
+
+        function setLoading(isLoading) {
+            searchButton.disabled = isLoading;
+            prevButton.disabled = isLoading || state.currentPage === 1;
+            nextButton.disabled = isLoading || state.currentPage === state.totalPages;
+            searchButton.textContent = isLoading ? 'Buscando...' : 'Buscar';
+        }
+
+        function updatePaginationControls() {
+            paginationControls.classList.toggle('hidden', state.totalRecords === 0);
+            
+            if (state.totalRecords > 0) {
+                prevButton.disabled = state.currentPage <= 1;
+                nextButton.disabled = state.currentPage >= state.totalPages;
+                pageStatus.textContent = `Página ${state.currentPage} de ${state.totalPages} – Total de ${state.totalRecords} municípios`;
+            } else {
+                 pageStatus.textContent = '';
+            }
+        }
+        
+        function renderMunicipios(data) {
+            municipiosTableBody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                municipiosTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-gray-500 italic">
+                            Nenhum município encontrado para a UF "${state.currentUf}" ou na página atual.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(municipio => {
+                const row = `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ${municipio.name}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${municipio.ibgeCode}
+                        </td>
+                    </tr>
+                `;
+                municipiosTableBody.innerHTML += row;
+            });
+        }
+        
+        async function fetchMunicipios() {
+            const uf = ufInput.value.trim().toUpperCase();
+            const pageSize = parseInt(pageSizeSelect.value);
+
+            if (uf.length !== 2) {
+                showMessage('A sigla da UF deve ter exatamente 2 caracteres.', 'error');
+                return;
+            }
+
+            state.currentUf = uf;
+            state.pageSize = pageSize;
+            clearMessage();
+            setLoading(true);
+            renderMunicipios(null);
+
+            const url = `${API_BASE_URL}${uf}?PageNumber=${state.currentPage}&PageSize=${state.pageSize}`;
+
+            try {
+                const response = await fetch(url);
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : null;
+
+                if (!response.ok) {
+                    let errorMessage = `Erro na API: Status ${response.status}.`;
+                    
+                    if (response.status === 404) {
+                        errorMessage = `Nenhum município encontrado para a UF: ${uf}.`;
+                    } else if (response.status === 503 && data && data.error) {
+                        errorMessage = `Provedor Indisponível (503): ${data.details || data.error}`;
+                    } else if (data && data.title) {
+                        errorMessage = `Erro (${response.status}): ${data.title}`;
+                    }
+
+                    throw new Error(errorMessage);
+                }
+
+                if (data.data && Array.isArray(data.data)) {
+                    state.totalRecords = data.totalRecords;
+                    state.totalPages = data.totalPages;
+                    state.currentPage = data.pageNumber;
+
+                    renderMunicipios(data.data);
+                    updatePaginationControls();
+                    showMessage(`Sucesso! ${data.data.length} municípios exibidos (Página ${state.currentPage}).`, 'success');
+                } else {
+                    throw new Error("Resposta da API em formato inesperado.");
+                }
+
+            } catch (error) {
+                console.error("Erro na busca:", error.message);
+                showMessage(`Falha na comunicação: ${error.message}. Verifique o console ou se a API está rodando em ${API_BASE_URL}.`, 'error');
+                
+                state.totalRecords = 0;
+                state.totalPages = 0;
+                state.currentPage = 1;
+                updatePaginationControls();
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        searchButton.addEventListener('click', () => {
+            state.currentPage = 1;
+            fetchMunicipios();
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                state.currentPage--;
+                fetchMunicipios();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (state.currentPage < state.totalPages) {
+                state.currentPage++;
+                fetchMunicipios();
+            }
+        });
+
+        ufInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                state.currentPage = 1;
+                fetchMunicipios();
+            }
+        });
+
+        window.addEventListener('load', () => {
+            fetchMunicipios();
+        });
+
+    </script>
+</body>
+</html>
