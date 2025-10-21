@@ -18,7 +18,7 @@ O cache armazena a lista completa de municípios por UF, garantindo que o hit de
 
 <h2>2. Provider Dinâmico</h2>
 
-O provedor de dados (BrasilApiProvider ou IbgeApiProvider) é selecionado dinamicamente durante a inicialização (Program.cs) com base na variável de ambiente IBGE_PROVIDER_TYPE.
+O provedor de dados (BrasilApiProvider ou IbgeApiProvider) é selecionado dinamicamente durante a inicialização (Program.cs) com base na variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong>.
 
 O Controller e o Cache dependem apenas da interface IIbgeProvider, isolando a aplicação da fonte de dados externa.
 
@@ -32,17 +32,18 @@ Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceçã
 
 <h2>Pré-requisitos</h2>
 
-.NET 8 SDK
+.NET 8 SDK - https://dotnet.microsoft.com/pt-br/download/dotnet/8.0
 
-Docker
+Docker - https://www.docker.com/products/docker-desktop/
 
-git
+git - https://git-scm.com/install/
 
 <h2>Clonar o Repositório</h2>
 
 Para iniciar o trabalho, clone o projeto usando o Git:
 
 git clone https://github.com/adrianonobrega/MunicipioApi.git
+
 cd MunicipioApi
 
 
