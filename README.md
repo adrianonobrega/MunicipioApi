@@ -155,3 +155,30 @@ Foco: Lógica de mapeamento (Provider -> MunicipioResponse), Lógica de Cache (H
 
 Foco: Testar o pipeline HTTP completo: injeção dinâmica do provider, resposta 200 OK com paginação, e a correta ativação do filtro de exceção para retornar 503.
 
+
+<h1>🚀 Teste Rápido - Consulta de Municípios por UF</h1>
+
+Para testar a API de forma interativa sem sair da documentação, use o arquivo Municipio.html. Este arquivo demonstra o consumo do endpoint de consulta de municípios por Unidade Federativa (UF) com paginação, utilizando a URL da API e os parâmetros de paginação.
+
+<h2>🔗 URL Base da API</h2>
+
+A URL base é definida no script do arquivo Municipio.html e possui duas opções:
+
+<img width="612" height="112" alt="image" src="https://github.com/user-attachments/assets/3700064e-77f7-47c2-bd41-c8ecd2fef274" />
+
+<h2>💡 Observações de Funcionamento</h2>
+
+Alternando entre Ambientes (Local vs. Produção): Para testar a API localmente, você deve editar o arquivo Municipio.html e seguir a convenção definida no código:
+
+<img width="667" height="120" alt="image" src="https://github.com/user-attachments/assets/94884e9e-5b45-4f2c-b4d6-a58f96ad1ce0" />
+
+Basta comentar a linha da URL hospedada (Produção) e descomentar a linha da URL local:
+
+<img width="664" height="112" alt="image" src="https://github.com/user-attachments/assets/b22321a9-f12a-4c20-88f1-a0b39ed0b78e" />
+
+O script utiliza as variáveis de estado (state.currentPage, state.pageSize, state.currentUf) para gerenciar a paginação e a busca.
+
+A função fetchMunicipios() constrói a URL e faz a requisição à API.
+
+Se estiver usando a URL hospedada (Render), o tempo de resposta pode ser maior na primeira requisição após um período de inatividade.
+
