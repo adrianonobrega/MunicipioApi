@@ -1,56 +1,63 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using MunicipioApi.Api.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Testing;
+using MunicipioApi.Api.Models;
 using Xunit;
 
 namespace MunicipioApi.Tests.IntegrationTests
 {
-
-    public class MunicipiosIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+    public class MunicipiosIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly WebApplicationFactory<Program> _factory;
+        private readonly HttpClient _client;
 
         public MunicipiosIntegrationTests(WebApplicationFactory<Program> factory)
         {
-            _factory = factory;
+            _client = factory.CreateClient();
         }
 
-        [Fact]
-        public async Task GetMunicipiosByUf_ValidUf_ReturnsOkAndData()
+        [Theory]
+        [InlineData("RS")]
+        [InlineData("SC")]
+        public async Task GetMunicipiosByUf_ValidUf_ReturnsOkAndData(string ufSigla)
         {
-            var client = _factory.CreateClient();
+            var response = await _client.GetAsync($"/api/municipios/{ufSigla}");
 
-            var response = await client.GetAsync("/api/municipios/RS");
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var pagedResponse = await response.Content.ReadFromJsonAsync<PagedResponse<MunicipioResponse>>();
 
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(pagedResponse);
+            Assert.NotNull(pagedResponse!.Data);
 
-            var content = await response.Content.ReadAsStringAsync();
-            var municipios = JsonSerializer.Deserialize<List<MunicipioResponse>>(content);
+            Assert.True(pagedResponse.Data.Any());
 
-            Assert.NotEmpty(municipios!);
-        }
+            Assert.True(pagedResponse.TotalRecords > 0);
+            Assert.Equal(1, pagedResponse.PageNumber);
 
-        [Fact]
-        public async Task GetMunicipiosByUf_InvalidUfSigla_ReturnsNotFound()
-        {
-            var client = _factory.CreateClient();
-
-            var response = await client.GetAsync("/api/municipios/XX");
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var primeiroMunicipio = pagedResponse.Data.First();
+            Assert.False(string.IsNullOrWhiteSpace(primeiroMunicipio.Name));
+            Assert.False(string.IsNullOrWhiteSpace(primeiroMunicipio.IbgeCode));
         }
 
-        [Fact]
-        public async Task GetMunicipiosByUf_UfWithInvalidLength_ReturnsBadRequest()
+        [Theory]
+        [InlineData("S")]
+        [InlineData("SPA")]
+        public async Task GetMunicipiosByUf_InvalidUfLength_ReturnsBadRequest(string invalidUf)
         {
-            var client = _factory.CreateClient();
+            var response = await _client.GetAsync($"/api/municipios/{invalidUf}");
 
-            var response = await client.GetAsync("/api/municipios/RSA");
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        [Fact]
+        public async Task GetMunicipiosByUf_InvalidUf_ReturnsNotFound()
+        {
+            var response = await _client.GetAsync($"/api/municipios/XX");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
