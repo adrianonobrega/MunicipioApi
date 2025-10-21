@@ -84,6 +84,7 @@ O projeto requer a variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong> con
 | :--- | :--- |
 | IBGE | Serviço oficial do IBGE. |
 | BRASILAPI | Brasil API. |
+
 Configurar o valor da variável no appsettings
 
 <h2>2. Execução via Docker (Recomendada)</h2>
