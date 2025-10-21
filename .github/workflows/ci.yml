@@ -33,7 +33,7 @@ jobs:
       run: dotnet test ${{ env.TEST_PROJECT_NAME }} --no-build --verbosity normal
       
   docker_publish:
-    needs: build_and_test # Depende que o build e os testes passem
+    needs: build_and_test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
@@ -50,10 +50,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Set lowercase image tag via Shell
+      id: tag_vars
+      run: |
+        # Usa comando shell padrão 'tr' para garantir a conversão para minúsculas
+        REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+        echo "TAGS=ghcr.io/$REPO_LOWER:latest" >> $GITHUB_OUTPUT
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: . 
+        context: .
         push: true
-        tags: ghcr.io/${{ lower(github.repository) }}:latest
-        file: Dockerfile # O Dockerfile na raiz da solução
+        tags: ${{ steps.tag_vars.outputs.TAGS }}
+        file: Dockerfile
