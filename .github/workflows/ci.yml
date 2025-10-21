@@ -53,7 +53,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: . 
         push: true
-        tags: ghcr.io/${{ github.repository | lower }}:latest
+        tags: ghcr.io/${{ lower(github.repository) }}:latest
         file: Dockerfile # O Dockerfile na raiz da solução
