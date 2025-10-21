@@ -33,7 +33,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       
   docker_publish:
-    needs: build_and_test 
+    needs: build_and_test # Depende que o build e os testes passem
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
@@ -55,5 +55,5 @@ jobs:
       with:
         context: . 
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/municipio-api:latest
-        file: Dockerfile 
+        tags: ghcr.io/${{ github.repository }}:latest
+        file: Dockerfile # O Dockerfile na raiz da solução
