@@ -1,13 +1,22 @@
-using MunicipioApi.Api.Extensions; 
-using MunicipioApi.Api.Services;   
+using MunicipioApi.Api.Extensions;
+using MunicipioApi.Api.Services;
 using MunicipioApi.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<ICacheService, CacheService>();
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
