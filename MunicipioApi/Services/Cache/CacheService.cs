@@ -28,7 +28,6 @@ namespace MunicipioApi.Api.Services
             }
             else
             {
-                // Define um tempo padrão se nenhum for passado (ex: 1 hora)
                 options.SetAbsoluteExpiration(TimeSpan.FromHours(1));
             }
 
