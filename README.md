@@ -32,10 +32,6 @@ Falhas de API externa (HttpResponseMessage não-sucesso) lançam uma exceção c
 
 Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceção e mapeia-a automaticamente para o código HTTP 503 Service Unavailable, garantindo uma resposta consistente e semântica.
 
-<h2>4. Paginação do Lado do Servidor</h2>
-
-A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o Service Layer (Providers), garantindo que a lista retornada ao Controller já esteja formatada corretamente.
-
 <h1>📈 ESTRATÉGIA DE CRESCIMENTO E ESCALABILIDADE</h1>
 
 O projeto foi estruturado para suportar a adição de novos endpoints e funcionalidades de forma modular, minimizando o risco de regressão.
