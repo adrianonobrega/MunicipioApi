@@ -24,17 +24,9 @@ O Controller e o Cache dependem apenas da interface IIbgeProvider, isolando a ap
 
 <h2>3. Tratamento Global de Exceções</h2>
 
-Para garantir a qualidade e o princípio DRY (Don't Repeat Yourself):
-
-O Controller é um Thin Controller (sem blocos try-catch).
-
 Falhas de API externa (HttpResponseMessage não-sucesso) lançam uma exceção customizada: ProviderIndisponivelException.
 
 Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceção e mapeia-a automaticamente para o código HTTP 503 Service Unavailable, garantindo uma resposta consistente e semântica.
-
-<h2>4. Paginação do Lado do Servidor</h2>
-
-A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o Service Layer (Providers), garantindo que a lista retornada ao Controller já esteja formatada corretamente.
 
 <h1>📦 COMO EXECUTAR O PROJETO</h1>
 
@@ -42,11 +34,21 @@ A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o 
 
 .NET 8 SDK
 
-Docker (Opcional, mas recomendado)
+Docker
+
+git
+
+<h2>Clonar o Repositório</h2>
+
+Para iniciar o trabalho, clone o projeto usando o Git:
+
+git clone https://github.com/adrianonobrega/MunicipioApi.git
+cd MunicipioApi
+
 
 <h2>1. Variáveis de Ambiente</h2>
 
-O projeto requer a variável de ambiente IBGE_PROVIDER_TYPE configurada para um dos seguintes valores:
+O projeto requer a variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong> configurada para um dos seguintes valores:
 | Valor | Provider Usado |
 | :--- | :--- |
 | IBGE | Serviço oficial do IBGE. |
@@ -98,15 +100,20 @@ Estrutura do PagedResponse
 
 <img width="340" height="268" alt="image" src="https://github.com/user-attachments/assets/bc1ba931-7162-41be-a468-d71f879a1e21" />
 
-🧪 Testes
+<h1>🧪 TESTES E QUALIDADE</h1>
 
-O projeto contém testes unitários e de integração para garantir a manutenibilidade e a funcionalidade.
+<h2>Executando os Testes</h2>
 
-Testes Unitários
+Para rodar todos os testes unitários e de integração do projeto, utilize o comando dotnet test na raiz do seu projeto (onde o arquivo .sln está localizado):
+
+dotnet test
+
+
+<h2>Testes Unitários</h2>
 
 Foco: Lógica de mapeamento (Provider -> MunicipioResponse), Lógica de Cache (HIT/MISS) e funções de paginação.
 
-Testes de Integração
+<h2>Testes de Integração</h2>
 
 Foco: Testar o pipeline HTTP completo: injeção dinâmica do provider, resposta 200 OK com paginação, e a correta ativação do filtro de exceção para retornar 503.
 
