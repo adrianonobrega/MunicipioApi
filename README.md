@@ -88,6 +88,7 @@ O projeto requer a variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong> con
 | :--- | :--- |
 | IBGE | Serviço oficial do IBGE. |
 | BRASILAPI | Brasil API. |
+Configurar o valor da variável no appsettings
 
 <h2>2. Execução via Docker (Recomendada)</h2>
 
@@ -105,7 +106,7 @@ A API estará disponível em http://localhost:5000.
 
 <h2>3. Execução Local</h2>
 
-dotnet run --project MunicipioApi.Api
+dotnet run --project MunicipioApi
 
 
 <h1>📋 ENDPOINT DA API</h1>
@@ -140,6 +141,8 @@ Estrutura do PagedResponse
 <h2>Executando os Testes</h2>
 
 Para rodar todos os testes unitários e de integração do projeto, utilize o comando dotnet test na raiz do seu projeto (onde o arquivo .sln está localizado):
+
+cd Tests
 
 dotnet test
 
