@@ -1,9 +1,10 @@
 ﻿using MunicipioApi.Api.Services.Interfaces;
 using MunicipioApi.Api.Models;
 using MunicipioApi.Api.Models.BrasilApi;
-using MunicipioApi.Api.Exceptions;
+using MunicipioApi.Api.Extensions;
 using System.Net;
-namespace MunicipioApi.Api.Services
+
+namespace MunicipioApi.Services.Provider
 {
     public class BrasilApiProvider : IIbgeProvider
     {
@@ -14,32 +15,26 @@ namespace MunicipioApi.Api.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla)
+        public async Task<PagedResponse<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla, PaginationParams paginationParams)
         {
             var response = await _httpClient.GetAsync($"/api/ibge/municipios/v1/{ufSigla}");
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                return Enumerable.Empty<MunicipioResponse>();
+                return Enumerable.Empty<MunicipioResponse>().ToPagedResponse(paginationParams);
             }
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ProviderIndisponivelException($"O provedor Brasil API retornou erro ({response.StatusCode}) para a UF: {ufSigla}.");
-            }
+            await response.EnsureSuccessOrThrowProviderErrorAsync("Brasil API", ufSigla);
 
             var apiModels = await response.Content.ReadFromJsonAsync<IEnumerable<BrasilApiMunicipioModel>>();
 
-            if (apiModels == null || !apiModels.Any())
-            {
-                return Enumerable.Empty<MunicipioResponse>();
-            }
-
-            return apiModels.Select(m => new MunicipioResponse
+            var municipios = apiModels?.Select(m => new MunicipioResponse
             {
                 Name = m.nome,
                 IbgeCode = m.codigo_ibge.ToString()
-            });
+            }) ?? Enumerable.Empty<MunicipioResponse>();
+
+            return municipios.ToPagedResponse(paginationParams);
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using MunicipioApi.Api.Services.Interfaces;
 using MunicipioApi.Api.Models;
 using MunicipioApi.Api.Models.IbgeApi;
-using MunicipioApi.Api.Exceptions;
+using MunicipioApi.Api.Extensions;
 
-
-namespace MunicipioApi.Api.Services
+namespace MunicipioApi.Services.Provider
 {
     public class IbgeApiProvider : IIbgeProvider
     {
@@ -15,27 +14,21 @@ namespace MunicipioApi.Api.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla)
+        public async Task<PagedResponse<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla, PaginationParams paginationParams)
         {
             var response = await _httpClient.GetAsync($"/api/v1/localidades/estados/{ufSigla}/municipios");
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ProviderIndisponivelException($"O provedor IBGE API retornou erro ({response.StatusCode}) para a UF: {ufSigla}.");
-            }
+            await response.EnsureSuccessOrThrowProviderErrorAsync("IBGE API", ufSigla);
 
             var apiModels = await response.Content.ReadFromJsonAsync<IEnumerable<IbgeApiMunicipioModel>>();
 
-            if (apiModels == null || !apiModels.Any())
-            {
-                return Enumerable.Empty<MunicipioResponse>();
-            }
-
-            return apiModels.Select(m => new MunicipioResponse
+            var municipios = apiModels?.Select(m => new MunicipioResponse
             {
                 Name = m.nome,
                 IbgeCode = m.id.ToString()
-            });
+            }) ?? Enumerable.Empty<MunicipioResponse>();
+
+            return municipios.ToPagedResponse(paginationParams);
         }
     }
 }

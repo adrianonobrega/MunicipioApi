@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MunicipioApi.Api.Models;
 using MunicipioApi.Api.Services.Interfaces;
-using MunicipioApi.Api.Exceptions;
-using MunicipioApi.Api.Extensions;
 
 namespace MunicipioApi.Api.Controllers
 {
@@ -23,34 +21,19 @@ namespace MunicipioApi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> GetMunicipiosByUf([FromRoute] string uf,
-                                                           [FromQuery] PaginationParams paginationParams)
+                                                          [FromQuery] PaginationParams paginationParams)
         {
             if (string.IsNullOrWhiteSpace(uf) || uf.Length != 2)
             {
                 return BadRequest("A sigla da UF deve conter exatamente 2 caracteres.");
             }
-
-            try
+            var pagedResponse = await _ibgeProvider.GetMunicipiosByUfAsync(uf.ToUpper(), paginationParams);
+            if (pagedResponse == null || pagedResponse.TotalRecords == 0)
             {
-                var municipiosCompletos = await _ibgeProvider.GetMunicipiosByUfAsync(uf.ToUpper());
-
-                if (municipiosCompletos == null || !municipiosCompletos.Any())
-                {
-                    return NotFound($"Nenhum município encontrado para a UF: {uf.ToUpper()}. Verifique se a sigla é válida.");
-                }
-
-                var pagedResponse = municipiosCompletos.ToPagedResponse(paginationParams);
-
-                return Ok(pagedResponse);
+                return NotFound($"Nenhum município encontrado para a UF: {uf.ToUpper()}. Verifique se a sigla é válida.");
             }
-            catch (ProviderIndisponivelException ex)
-            {
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
-                {
-                    error = "Provedor de dados externo indisponível.",
-                    details = ex.Message
-                });
-            }
+
+            return Ok(pagedResponse);
         }
     }
 }

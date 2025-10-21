@@ -1,5 +1,5 @@
-﻿using MunicipioApi.Api.Services;
-using MunicipioApi.Api.Services.Interfaces;
+﻿using MunicipioApi.Api.Services.Interfaces;
+using MunicipioApi.Services.Provider;
 
 namespace MunicipioApi.Api.Extensions
 {

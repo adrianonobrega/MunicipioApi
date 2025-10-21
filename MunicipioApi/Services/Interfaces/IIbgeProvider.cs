@@ -4,6 +4,6 @@ namespace MunicipioApi.Api.Services.Interfaces
 {
     public interface IIbgeProvider
     {
-        Task<IEnumerable<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla);
+        Task<PagedResponse<MunicipioResponse>> GetMunicipiosByUfAsync(string ufSigla, PaginationParams paginationParams);
     }
 }
