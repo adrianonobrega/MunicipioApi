@@ -87,6 +87,10 @@ O projeto requer a variável de ambiente <strong>IBGE_PROVIDER_TYPE</strong> con
 
 Configurar o valor da variável no appsettings
 
+<img width="418" height="204" alt="image" src="https://github.com/user-attachments/assets/38d178e5-0e93-435f-bc9f-93a588c29c79" />
+
+No exemplo acima estamos usando o BRASIL_API, se quisermos usar o provider IBGE_API, comente a linha 11 e descomente a linha 12.
+
 <h2>2. Execução via Docker (Recomendada)</h2>
 
 Construir a Imagem: Navegue até a raiz do projeto (onde está o Dockerfile).
