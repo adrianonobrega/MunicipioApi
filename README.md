@@ -183,3 +183,5 @@ A função fetchMunicipios() constrói a URL e faz a requisição à API.
 
 Se estiver usando a URL hospedada (Render), o tempo de resposta pode ser maior na primeira requisição após um período de inatividade.
 
+<img width="936" height="882" alt="image" src="https://github.com/user-attachments/assets/f409f583-0ee4-44d4-be7e-22b3b5735b50" />
+
