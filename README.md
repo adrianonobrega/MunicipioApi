@@ -1,12 +1,12 @@
-🌎 MUNICÍPIO API: DESAFIO TÉCNICO DEV FULLSTACK .NET
+<h1>🌎 MUNICÍPIO API: DESAFIO TÉCNICO DEV FULLSTACK .NET</h1>
 
 API RESTful desenvolvida em ASP.NET Core 8 para pesquisar e listar municípios brasileiros por Unidade Federativa (UF), utilizando provedores de dados externos e implementando padrões avançados de arquitetura e otimização.
 
-🚀 ARQUITETURA E DECISÕES TÉCNICAS
+<h1>🚀 ARQUITETURA E DECISÕES TÉCNICAS</h1>
 
 O projeto segue os princípios da Arquitetura Limpa (Clean/Onion Architecture) com ênfase na Separação de Preocupações (SoC) e Injeção de Dependência (DI).
 
-1. Padrão Decorator (Cache)
+<h2>1. Padrão Decorator (Cache)</h2>
 
 O requisito de cache foi implementado usando o Padrão Decorator.
 
@@ -16,13 +16,13 @@ O Controller injeta o Decorator (IIbgeProvider), recebendo o cache de forma tran
 
 O cache armazena a lista completa de municípios por UF, garantindo que o hit de cache seja rápido e independente da página solicitada.
 
-2. Provider Dinâmico
+<h2>2. Provider Dinâmico</h2>
 
 O provedor de dados (BrasilApiProvider ou IbgeApiProvider) é selecionado dinamicamente durante a inicialização (Program.cs) com base na variável de ambiente IBGE_PROVIDER_TYPE.
 
 O Controller e o Cache dependem apenas da interface IIbgeProvider, isolando a aplicação da fonte de dados externa.
 
-3. Tratamento Global de Exceções
+<h2>3. Tratamento Global de Exceções</h2>
 
 Para garantir a qualidade e o princípio DRY (Don't Repeat Yourself):
 
@@ -32,19 +32,19 @@ Falhas de API externa (HttpResponseMessage não-sucesso) lançam uma exceção c
 
 Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceção e mapeia-a automaticamente para o código HTTP 503 Service Unavailable, garantindo uma resposta consistente e semântica.
 
-4. Paginação do Lado do Servidor
+<h2>4. Paginação do Lado do Servidor</h2>
 
 A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o Service Layer (Providers), garantindo que a lista retornada ao Controller já esteja formatada corretamente.
 
-📦 COMO EXECUTAR O PROJETO
+<h1>📦 COMO EXECUTAR O PROJETO</h1>
 
-Pré-requisitos
+<h2>Pré-requisitos</h2>
 
 .NET 8 SDK
 
 Docker (Opcional, mas recomendado)
 
-1. Variáveis de Ambiente
+<h2>1. Variáveis de Ambiente</h2>
 
 O projeto requer a variável de ambiente IBGE_PROVIDER_TYPE configurada para um dos seguintes valores:
 | Valor | Provider Usado |
@@ -52,7 +52,7 @@ O projeto requer a variável de ambiente IBGE_PROVIDER_TYPE configurada para um 
 | IBGE | Serviço oficial do IBGE. |
 | BRASILAPI | Brasil API. |
 
-2. Execução via Docker (Recomendada)
+<h2>2. Execução via Docker (Recomendada)</h2>
 
 Construir a Imagem: Navegue até a raiz do projeto (onde está o Dockerfile).
 
@@ -66,21 +66,21 @@ docker run -d -p 5000:8080 -e "IBGE_PROVIDER_TYPE=BRASILAPI" --name municipio-ap
 
 A API estará disponível em http://localhost:5000.
 
-3. Execução Local
+<h2>3. Execução Local</h2>
 
 dotnet run --project MunicipioApi.Api
 
 
-📋 ENDPOINT DA API
+<h1>📋 ENDPOINT DA API</h1>
 
-Listar Municípios por UF
+<h2>Listar Municípios por UF</h2>
 
 Retorna uma lista paginada de municípios para a UF solicitada.
 
 Método: GET
 URI: /api/municipios/{uf}
 
-Parâmetros de Rota ({uf})
+<h3>Parâmetros de Rota ({uf})</h3>
 
 <img width="720" height="106" alt="image" src="https://github.com/user-attachments/assets/aee90743-69e3-4811-8fe5-822ffd74e22e" />
 
