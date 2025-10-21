@@ -1,24 +1,36 @@
 ﻿using Xunit;
 using Moq;
 using Moq.Protected;
-using MunicipioApi.Api.Services;
 using MunicipioApi.Api.Exceptions;
+using MunicipioApi.Api.Models;
+using MunicipioApi.Services.Provider;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text;
 
 namespace MunicipioApi.Tests.UnitTests
 {
     public class BrasilApiProviderTests
     {
-        // Método de teste 1: Deve retornar uma lista vazia quando a API externa retornar 404 (UF inválida)
+        private readonly PaginationParams _defaultPaginationParams = new PaginationParams();
+
+        private const string TestBaseUrl = "https://brasilapi.com.br";
+
+        private BrasilApiProvider CreateProvider(HttpMessageHandler mockHandler)
+        {
+            var httpClient = new HttpClient(mockHandler)
+            {
+                BaseAddress = new Uri(TestBaseUrl)
+            };
+            return new BrasilApiProvider(httpClient);
+        }
+
         [Fact]
-        public async Task GetMunicipiosByUfAsync_WhenApiReturnsNotFound_ShouldReturnEmptyList()
+        public async Task GetMunicipiosByUfAsync_WhenApiReturnsNotFound_ShouldReturnEmptyPagedResponse()
         {
             const string ufSigla = "SW";
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            
+
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
@@ -27,31 +39,26 @@ namespace MunicipioApi.Tests.UnitTests
                 )
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.NotFound, // Simula o 404
+                    StatusCode = HttpStatusCode.NotFound,
                     Content = new StringContent("", Encoding.UTF8, "application/json")
                 });
 
-            var httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = new Uri("http://dummy.brasilapi.com.br")
-            };
+            var provider = CreateProvider(mockHttpMessageHandler.Object);
 
-            var provider = new BrasilApiProvider(httpClient);
-
-            var result = await provider.GetMunicipiosByUfAsync(ufSigla);
+            var result = await provider.GetMunicipiosByUfAsync(ufSigla, _defaultPaginationParams);
 
             Assert.NotNull(result);
-            Assert.Empty(result);
+            Assert.Empty(result.Data);
+            Assert.Equal(0, result.TotalRecords);
         }
-        
-        // Método de teste 2: Deve lançar ProviderIndisponivelException quando a API retornar 500 (Falha no Provedor)
+
         [Fact]
         public async Task GetMunicipiosByUfAsync_WhenApiReturnsServerError_ShouldThrowException()
         {
-            const string ufSigla = "RS"; 
-            
+            const string ufSigla = "RS";
+
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            
+
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
@@ -63,17 +70,12 @@ namespace MunicipioApi.Tests.UnitTests
                     StatusCode = HttpStatusCode.InternalServerError
                 });
 
-            var httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = new Uri("http://dummy.brasilapi.com.br")
-            };
-            var provider = new BrasilApiProvider(httpClient);
+            var provider = CreateProvider(mockHttpMessageHandler.Object);
 
-            await Assert.ThrowsAsync<ProviderIndisponivelException>(() => 
-                provider.GetMunicipiosByUfAsync(ufSigla));
+            await Assert.ThrowsAsync<ProviderIndisponivelException>(() =>
+                provider.GetMunicipiosByUfAsync(ufSigla, _defaultPaginationParams));
         }
 
-        // Adicionar teste de sucesso
         [Fact]
         public async Task GetMunicipiosByUfAsync_WhenApiReturnsSuccess_ShouldMapCorrectly()
         {
@@ -82,9 +84,9 @@ namespace MunicipioApi.Tests.UnitTests
                 { ""codigo_ibge"": 3550308, ""nome"": ""São Paulo"" },
                 { ""codigo_ibge"": 3509902, ""nome"": ""Campinas"" }
             ]";
-            
+
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            
+
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
@@ -97,17 +99,12 @@ namespace MunicipioApi.Tests.UnitTests
                     Content = new StringContent(successJson, Encoding.UTF8, "application/json")
                 });
 
-            var httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = new Uri("http://dummy.brasilapi.com.br")
-            };
-            var provider = new BrasilApiProvider(httpClient);
+            var provider = CreateProvider(mockHttpMessageHandler.Object);
 
-            var result = await provider.GetMunicipiosByUfAsync(ufSigla);
+            var result = await provider.GetMunicipiosByUfAsync(ufSigla, _defaultPaginationParams);
 
-            Assert.Equal(2, result.Count());
-            Assert.Contains(result, m => m.Name == "São Paulo" && m.IbgeCode == "3550308");
-            Assert.Contains(result, m => m.Name == "Campinas" && m.IbgeCode == "3509902");
+            Assert.Equal(2, result.Data.Count());
+            Assert.Contains(result.Data, m => m.Name == "São Paulo" && m.IbgeCode == "3550308");
         }
     }
 }
