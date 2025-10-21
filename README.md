@@ -1,4 +1,4 @@
-<h1>🌎 MUNICÍPIO API: DESAFIO TÉCNICO DEV FULLSTACK .NET</h1>
+<h1>🌎 MUNICÍPIO API</h1>
 
 API RESTful desenvolvida em ASP.NET Core 8 para pesquisar e listar municípios brasileiros por Unidade Federativa (UF), utilizando provedores de dados externos e implementando padrões avançados de arquitetura e otimização.
 
