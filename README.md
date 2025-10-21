@@ -1,8 +1,8 @@
-🌎 MunicipioApi
+🌎 MUNICÍPIO API: DESAFIO TÉCNICO DEV FULLSTACK .NET
 
 API RESTful desenvolvida em ASP.NET Core 8 para pesquisar e listar municípios brasileiros por Unidade Federativa (UF), utilizando provedores de dados externos e implementando padrões avançados de arquitetura e otimização.
 
-🚀 Arquitetura e Decisões Técnicas
+🚀 ARQUITETURA E DECISÕES TÉCNICAS
 
 O projeto segue os princípios da Arquitetura Limpa (Clean/Onion Architecture) com ênfase na Separação de Preocupações (SoC) e Injeção de Dependência (DI).
 
@@ -36,7 +36,7 @@ Um Filtro de Exceção Global (ProviderExceptionFilter) intercepta esta exceçã
 
 A lógica de paginação (PaginationParams e ToPagedResponse) foi movida para o Service Layer (Providers), garantindo que a lista retornada ao Controller já esteja formatada corretamente.
 
-📦 Como Executar o Projeto
+📦 COMO EXECUTAR O PROJETO
 
 Pré-requisitos
 
@@ -71,7 +71,7 @@ A API estará disponível em http://localhost:5000.
 dotnet run --project MunicipioApi.Api
 
 
-📋 Endpoint da API
+📋 ENDPOINT DA API
 
 Listar Municípios por UF
 
